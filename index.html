@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meshuga Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- iOS PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Meshuga">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-touch-fullscreen" content="yes">
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#FFD700">
+    <meta name="msapplication-navbutton-color" content="#FFD700">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#FFD700">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-bottom: 1px solid #333;
+            padding: 24px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FF8C00);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .brand-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .brand-text span {
+            font-size: 14px;
+            color: #888;
+            font-weight: 400;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 48px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FFD700;
+            line-height: 1;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 48px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: #ffffff;
+        }
+
+        /* Bot Grid */
+        .bot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 64px;
+        }
+
+        .bot-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #262626 100%);
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bot-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FFD700, #FFA500, #FF8C00);
+            opacity: 0.8;
+        }
+
+        .bot-card:hover {
+            transform: translateY(-4px);
+            border-color: #555;
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.15);
+        }
+
+        .bot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .bot-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .bot-info .bot-role {
+            font-size: 13px;
+            color: #888;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        .bot-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #4ade80;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .bot-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FFD700;
+            line-height: 1;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Status Panels */
+        .status-section {
+            margin-top: 64px;
+        }
+
+        .status-panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .status-panel {
+            background: linear-gradient(135deg, #1a1a1a 0%, #262626 100%);
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .status-panel h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #ffffff;
+        }
+
+        .health-indicators {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .indicator-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 12px rgba(74, 222, 128, 0.5);
+        }
+
+        .indicator span {
+            font-size: 15px;
+            color: #ccc;
+        }
+
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .project-name {
+            font-size: 15px;
+            color: #ccc;
+            flex: 1;
+        }
+
+        .project-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 100px;
+        }
+
+        .progress-bar {
+            width: 80px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            transition: width 0.5s ease;
+        }
+
+        .project-progress span {
+            font-size: 13px;
+            color: #888;
+            min-width: 32px;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .bot-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-panels {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-stats {
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bot-card {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .bot-card:nth-child(1) { animation-delay: 0.1s; }
+        .bot-card:nth-child(2) { animation-delay: 0.2s; }
+        .bot-card:nth-child(3) { animation-delay: 0.3s; }
+        .bot-card:nth-child(4) { animation-delay: 0.4s; }
+        .bot-card:nth-child(5) { animation-delay: 0.5s; }
+        .bot-card:nth-child(6) { animation-delay: 0.6s; }
+        .bot-card:nth-child(7) { animation-delay: 0.7s; }
+        .bot-card:nth-child(8) { animation-delay: 0.8s; }
+        .bot-card:nth-child(9) { animation-delay: 0.9s; }
+        .bot-card:nth-child(10) { animation-delay: 1.0s; }
+        .bot-card:nth-child(11) { animation-delay: 1.1s; }
+        .bot-card:nth-child(12) { animation-delay: 1.2s; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <svg width="28" height="28" viewBox="0 0 32 32" fill="white">
+                            <path d="M4 4h8l8 12-8 12h-8l8-12z"/>
+                            <path d="M12 4h8l8 12-8 12h-8l8-12z" opacity="0.7"/>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <h1>Meshuga Intelligence</h1>
+                        <span>Command Center</span>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="total-tasks">290</span>
+                        <span class="stat-label">Tasks Today</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="avg-performance">95%</span>
+                        <span class="stat-label">Performance</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="revenue">$285K</span>
+                        <span class="stat-label">Revenue Target</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="uptime">99.9%</span>
+                        <span class="stat-label">Uptime</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Orchestra Grid -->
+            <section class="orchestra-section">
+                <h2 class="section-title">Intelligence Orchestra</h2>
+                <div class="bot-grid" id="bot-grid">
+                    <!-- Bot cards will be dynamically inserted here -->
+                </div>
+            </section>
+
+            <!-- System Status -->
+            <section class="status-section">
+                <div class="status-panels">
+                    <div class="status-panel">
+                        <h3>System Health</h3>
+                        <div class="health-indicators">
+                            <div class="indicator">
+                                <div class="indicator-light"></div>
+                                <span>API Services</span>
+                            </div>
+                            <div class="indicator">
+                                <div class="indicator-light"></div>
+                                <span>Bot Network</span>
+                            </div>
+                            <div class="indicator">
+                                <div class="indicator-light"></div>
+                                <span>Data Pipeline</span>
+                            </div>
+                            <div class="indicator">
+                                <div class="indicator-light"></div>
+                                <span>Email Systems</span>
+                            </div>
+                            <div class="indicator">
+                                <div class="indicator-light"></div>
+                                <span>Browser Automation</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-panel">
+                        <h3>Active Projects</h3>
+                        <div class="project-list">
+                            <div class="project-item">
+                                <div class="project-name">Website Intelligence Pipeline</div>
+                                <div class="project-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 78%"></div>
+                                    </div>
+                                    <span>78%</span>
+                                </div>
+                            </div>
+                            <div class="project-item">
+                                <div class="project-name">Legal Market Analysis</div>
+                                <div class="project-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 65%"></div>
+                                    </div>
+                                    <span>65%</span>
+                                </div>
+                            </div>
+                            <div class="project-item">
+                                <div class="project-name">Premium Brand Development</div>
+                                <div class="project-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 92%"></div>
+                                    </div>
+                                    <span>92%</span>
+                                </div>
+                            </div>
+                            <div class="project-item">
+                                <div class="project-name">Social Media Intelligence</div>
+                                <div class="project-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 45%"></div>
+                                    </div>
+                                    <span>45%</span>
+                                </div>
+                            </div>
+                            <div class="project-item">
+                                <div class="project-name">Political Campaign Opportunities</div>
+                                <div class="project-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 30%"></div>
+                                    </div>
+                                    <span>30%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const bots = [
+            { id: 'newo', name: 'Newo Namtob', role: 'Strategic Leader & CEO', performance: 98, tasks: 28, status: 'active', emoji: '⚡' },
+            { id: 'scout', name: 'Scout', role: 'Market Intelligence Director', performance: 94, tasks: 31, status: 'active', emoji: '🔍' },
+            { id: 'bridge', name: 'Bridge', role: 'Client Relations Manager', performance: 89, tasks: 18, status: 'active', emoji: '🤝' },
+            { id: 'forge', name: 'Forge', role: 'Solution Architect', performance: 97, tasks: 26, status: 'active', emoji: '⚒️' },
+            { id: 'voice', name: 'Voice', role: 'Communications Director', performance: 93, tasks: 22, status: 'active', emoji: '📢' },
+            { id: 'pulse', name: 'Pulse', role: 'Strategic Analytics Lead', performance: 95, tasks: 19, status: 'active', emoji: '📊' },
+            { id: 'pixel', name: 'Pixel', role: 'Creative Production Director', performance: 96, tasks: 42, status: 'active', emoji: '🎨' },
+            { id: 'trend', name: 'Trend', role: 'Social Media & Trends Analyst', performance: 91, tasks: 24, status: 'active', emoji: '📱' },
+            { id: 'query', name: 'Query', role: 'Research & Data Mining Specialist', performance: 92, tasks: 35, status: 'active', emoji: '🔎' },
+            { id: 'flow', name: 'Flow', role: 'Process Optimization Engineer', performance: 94, tasks: 18, status: 'active', emoji: '⚙️' },
+            { id: 'code', name: 'Code', role: 'Technical Development Lead', performance: 96, tasks: 21, status: 'active', emoji: '💻' },
+            { id: 'brand', name: 'Brand', role: 'Brand Strategy Architect', performance: 97, tasks: 16, status: 'active', emoji: '🎯' }
+        ];
+
+        function getPerformanceColor(performance) {
+            if (performance >= 95) return '#4ade80';
+            if (performance >= 90) return '#fbbf24';
+            if (performance >= 80) return '#f97316';
+            return '#ef4444';
+        }
+
+        function renderBots() {
+            const botGrid = document.getElementById('bot-grid');
+            
+            bots.forEach((bot, index) => {
+                const botCard = document.createElement('div');
+                botCard.className = 'bot-card';
+                
+                const performanceColor = getPerformanceColor(bot.performance);
+                
+                botCard.innerHTML = `
+                    <div class="bot-header">
+                        <div class="bot-info">
+                            <h3>${bot.emoji} ${bot.name}</h3>
+                            <div class="bot-role">${bot.role}</div>
+                        </div>
+                        <div class="bot-status">
+                            <div class="status-dot"></div>
+                            <span>ACTIVE</span>
+                        </div>
+                    </div>
+                    <div class="bot-metrics">
+                        <div class="metric">
+                            <div class="metric-value" style="color: ${performanceColor}">${bot.performance}%</div>
+                            <div class="metric-label">Performance</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${bot.tasks}</div>
+                            <div class="metric-label">Tasks Today</div>
+                        </div>
+                    </div>
+                `;
+                
+                botGrid.appendChild(botCard);
+            });
+        }
+
+        // Auto-update metrics
+        function updateMetrics() {
+            // Simulate live updates
+            bots.forEach(bot => {
+                if (Math.random() > 0.8) {
+                    bot.tasks += Math.floor(Math.random() * 3);
+                    bot.performance = Math.max(85, Math.min(99, bot.performance + (Math.random() - 0.5) * 2));
+                }
+            });
+            
+            // Update total tasks
+            const totalTasks = bots.reduce((sum, bot) => sum + bot.tasks, 0);
+            document.getElementById('total-tasks').textContent = totalTasks;
+            
+            // Update average performance
+            const avgPerformance = Math.round(bots.reduce((sum, bot) => sum + bot.performance, 0) / bots.length);
+            document.getElementById('avg-performance').textContent = avgPerformance + '%';
+            
+            // Re-render bots with updated data
+            document.getElementById('bot-grid').innerHTML = '';
+            renderBots();
+        }
+
+        // Initialize
+        renderBots();
+        
+        // Update every 15 seconds
+        setInterval(updateMetrics, 15000);
+        
+        // Add some dynamic effects
+        setInterval(() => {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const currentWidth = parseInt(bar.style.width);
+                const change = (Math.random() - 0.5) * 4;
+                const newWidth = Math.max(0, Math.min(100, currentWidth + change));
+                bar.style.width = newWidth + '%';
+                bar.parentElement.parentElement.querySelector('span').textContent = Math.round(newWidth) + '%';
+            });
+        }, 10000);
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Show install button or banner
+            showInstallPrompt();
+        });
+
+        function showInstallPrompt() {
+            // You can add an install button here if desired
+            console.log('PWA can be installed');
+        }
+    </script>
+</body>
+</html>
